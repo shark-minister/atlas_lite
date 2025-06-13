@@ -1,0 +1,19 @@
+h1 {
+    font-size: Large;
+}
+
+button {
+    margin-right: 1ex;
+}
+
+#ctrl-buttons, #stats {
+    margin-bottom: 2ex;
+}
+
+table {
+    border: solid 1px black;
+}
+
+td {
+    border: solid 1px black;
+}

@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <title>ATLAS Lite client</title>
+  </head>
+  <body>
+    <h1>読み出し・データ表示</h1>
+    <!-- for Vue Mount -->
+    <div id="atlas-client">
+
+      <div id="ctrl-buttons">
+        <button @click="read_data()">
+          データの読み出し
+          <div class="eng">read data</div>
+        </button>
+
+        <button @click="clear_data()">
+          データの初期化
+          <div class="eng">clear data</div>
+        </button>
+      </div>
+
+      <div id="stats">
+        <table>
+          <tr>
+            <td colspan="2">シュート数</td>
+            <td>{{ num_shoots }}</td>
+          </tr>
+          <tr>
+            <td rowspan="4">シュート<br/>パワー</td>
+            <td>最大</td>
+            <td>{{ max_sp }}</td>
+          </tr>
+          <tr>
+            <td>最小</td>
+            <td>{{ min_sp }}</td>
+          </tr>
+          <tr>
+            <td>平均</td>
+            <td>{{ avg_sp }}</td>
+          </tr>
+          <tr>
+            <td>標準偏差</td>
+            <td>{{ std_sp }}</td>
+          </tr>
+        </table>
+      </div>
+
+      <canvas id="histogram" width="800" height="600"></canvas>
+    </div>
+
+  </body>
+  <script src="./res/vue3.global.prod.js"></script>
+  <script src="./res/chart.min.js"></script>
+  <script src="./res/app.js"></script>
+  <link rel="stylesheet" type="text/css" href="./res/style.css">
+</html>
