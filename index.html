@@ -1,222 +1,51 @@
 <html>
   <head>
-    <title>ATLAS client</title>
+    <title>ATLAS Lite client</title>
   </head>
   <body>
+    <h1>読み出し・データ表示</h1>
     <!-- for Vue Mount -->
     <div id="atlas-client">
 
-      <div class="contents">
+      <div id="ctrl-buttons">
+        <button @click="read_data()">
+          データの読み出し
+          <div class="eng">read data</div>
+        </button>
 
-        <!-- マニュアル制御 -->
-        <h1 class="heading">マニュアル制御 <span>/ manual control</span></h1>
-        <div class="menu-container">
-          <button @click="launch()" :disabled="is_button_busy">
-            ベイを射出する
-            <div class="eng">launch Beyblade</div>
-          </button>
-        </div>
-
-        <!-- 設定 -->
-        <h1 class="heading">設定 <span>/ parameters</span></h1>
-        <div class="menu-container">
-          <table>
-            <tr v-if="num_motors == 2">
-              <td></td>
-              <th class="header-elr">ELR #1</th>
-              <th class="header-elr">ELR #2</th>
-            </tr>
-            <tr>
-              <th class="header-item">
-                回転方向
-                <div class="eng">rotation</div>
-              </th>
-              <td>
-                <label class="toggle-lr">
-                  <input type="checkbox" id="elr1-rot" v-model="elr1.rot_is_right" />
-                </label>
-              </td>
-              <td v-if="num_motors == 2">
-                <label class="toggle-lr">
-                  <input type="checkbox" id="elr2-rot" v-model="elr2.rot_is_right" />
-                </label>
-              </td>
-            </tr>
-            <tr>
-              <th class="header-item">
-                シュートパワー
-                <div class="eng">shoot power</div>
-              </th>
-              <td>
-                <input type="number" class="number" id="elr1-sp"
-                      min="3000" max="24000" step="100"
-                      v-model.number="elr1.sp" />
-                <div class="note">※100の倍数</div>
-              </td>
-              <td v-if="num_motors == 2">
-                <input type="number" class="number" id="elr2-sp"
-                      min="3000" max="24000" step="100"
-                      v-model.number="elr2.sp" />
-                <div class="note">※100の倍数</div>
-              </td>
-            </tr>
-            <tr v-if="num_motors == 2">
-              <th class="header-item">
-                マニュアルモード
-                <div class="eng">manual mode</div>
-              </th>
-              <td>
-                <label class="toggle-btn">
-                  <input type="checkbox" id="elr1-manual" v-model="elr1.enabled_manual" />
-                </label>
-              </td>
-              <td>
-                <label class="toggle-btn">
-                  <input type="checkbox" id="elr2-manual" v-model="elr2.enabled_manual" />
-                </label>
-              </td>
-            </tr>
-            <tr v-if="num_motors == 2">
-              <th class="header-item">
-                オートモード
-                <div class="eng">auto mode</div>
-              </th>
-              <td colspan="2">
-                <label class="toggle-12">
-                  <input type="checkbox" id="elr-auto" v-model="elr2_auto" />
-                </label>
-              </td>
-            </tr>
-            <tr>
-              <th class="header-item">
-                猶予時間 [ms]
-                <div class="eng">latency</div>
-              </th>
-              <td :colspan="num_motors">
-                <input type="number" class="number" id="latency"
-                      min="500" max="2560" step="10"
-                      v-model.number="latency" />
-                <div class="note">※10の倍数</div>
-              </td>
-            </tr>
-            <tr>
-              <th class="header-item">
-                遅延時間 [ms]
-                <div class="eng">delay</div>
-              </th>
-              <td :colspan="num_motors">
-                <input type="number" class="number" id="delay"
-                      min="0" max="500" step="2"
-                      v-model.number="delay" />
-                <div class="note">※偶数</div>
-              </td>
-            </tr>
-            <tr>
-              <th class="header-item">
-                ROMに書き込み
-                <div class="eng">write to ROM</div>
-              </th>
-              <td :colspan="num_motors">
-                <label class="toggle-btn">
-                  <input type="checkbox" id="write-rom" v-model="write_rom" />
-                </label>
-              </td>
-            </tr>
-            <tr class="btn-margin">
-              <td :colspan="num_motors+1">
-                <button @click="read_params()" :disabled="is_button_busy">
-                  読み出す
-                  <div class="eng">read parameters</div>
-                </button>
-                <button @click="write_params()" :disabled="is_button_busy">
-                  書き込む
-                  <div class="eng">write parameters</div>
-                </button>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <!-- シュート情報取得 -->
-        <h1 class="heading">シュート情報 <span>/ shoot data</span></h1>
-        <div class="menu-container">
-
-          <table id="shoot-stats">
-            <tr>
-              <th class="header-item">
-                シュート数
-                <div class="eng">num. shoots</div>
-              </th>
-              <td class="form-align">
-                <input type="number" class="sp-data"
-                       readonly="true" v-model="num_shoots" />
-              </td>
-            </tr>
-            <tr>
-              <th class="header-item">
-                最大SP
-                <div class="eng">max SP</div>
-              </th>
-              <td class="form-align">
-                <input type="number" class="sp-data"
-                       readonly="true" v-model="max_sp" />
-              </td>
-            </tr>
-            <tr>
-              <th class="header-item">
-                最小SP
-                <div class="eng">min SP</div>
-              </th>
-              <td class="form-align">
-                <input type="number" class="sp-data"
-                       readonly="true" v-model="min_sp" />
-              </td>
-            </tr>
-            <tr>
-              <th class="header-item">
-                平均SP
-                <div class="eng">mean SP</div>
-              </th>
-              <td class="form-align">
-                <input type="number" class="sp-data"
-                       readonly="true" v-model="avg_sp" />
-              </td>
-            </tr>
-            <tr>
-              <th class="header-item">
-                標準偏差
-                <div class="eng">std. deviation</div>
-              </th>
-              <td class="form-align">
-                <input type="number" class="sp-data"
-                       readonly="true" v-model="std_sp" />
-              </td>
-            </tr>
-            <tr class="btn-margin">
-              <td colspan="2">
-                <button @click="read_shoot_data()" :disabled="is_button_busy">
-                  読み出す
-                  <div class="eng">read data</div>
-                </button>
-
-                <button @click="clear_shoot_data()" :disabled="is_button_busy">
-                  初期化する
-                  <div class="eng">clear data</div>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <canvas id="histogram" width="400" height="600"></canvas>
-              </td>
-            </tr>
-          </table>
-
-          
-        </div>
-
+        <button @click="clear_data()">
+          データの初期化
+          <div class="eng">clear data</div>
+        </button>
       </div>
 
+      <div id="stats">
+        <table>
+          <tr>
+            <td colspan="2">シュート数</td>
+            <td>{{ total }}</td>
+          </tr>
+          <tr>
+            <td rowspan="4">シュート<br/>パワー</td>
+            <td>最大</td>
+            <td>{{ max_sp }}</td>
+          </tr>
+          <tr>
+            <td>最小</td>
+            <td>{{ min_sp }}</td>
+          </tr>
+          <tr>
+            <td>平均</td>
+            <td>{{ avg_sp }}</td>
+          </tr>
+          <tr>
+            <td>標準偏差</td>
+            <td>{{ std_sp }}</td>
+          </tr>
+        </table>
+      </div>
+
+      <canvas id="histogram" width="800" height="600"></canvas>
     </div>
 
   </body>
